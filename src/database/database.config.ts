@@ -12,5 +12,12 @@ export function dbConfigOptions(): SequelizeOptions {
     define: {
       underscored: true,
     },
+    ssl: true,
+    dialectOptions: {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false,
+      },
+    },
   };
 };

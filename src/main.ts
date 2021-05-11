@@ -17,7 +17,7 @@ async function bootstrap(): Promise<void> {
   app.useGlobalInterceptors(new ContextInterceptor());
   setupSwagger(app, process.env.APP_NAME);
 
-  await app.listen(process.env.APP_PORT || 3000);
+  await app.listen(process.env.PORT || 3000);
 }
 
 function setupApp(app: INestApplication): void {
