@@ -5,8 +5,8 @@ export class User extends Model {
   public email: string;
 
   @Column
-  public firstName: string;
+  public password: string;
 
   @Column
-  public lastName: string;
+  public fullName: string;
 }

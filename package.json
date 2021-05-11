@@ -1,13 +1,13 @@
 {
-  "name": "nestjs-api-template",
+  "name": "lestsparty-api-nestjs",
   "version": "0.0.1",
   "description": "",
-  "author": "",
+  "author": "Teerpong Phothiphun",
   "private": true,
   "license": "UNLICENSED",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/SCGWEDOtech/nest-api-template.git"
+    "url": "git+https://github.com/sarapmax/letsparty-api-nestjs.git"
   },
   "scripts": {
     "prebuild": "rimraf dist",
@@ -41,10 +41,7 @@
     ]
   },
   "dependencies": {
-    "@aws-sdk/client-cognito-identity": "^3.4.1",
-    "@aws-sdk/client-cognito-identity-provider": "^3.4.1",
     "@aws-sdk/client-s3": "^3.4.1",
-    "@aws-sdk/credential-provider-cognito-identity": "^3.4.1",
     "@nestjs/common": "^7.6.5",
     "@nestjs/config": "^0.6.2",
     "@nestjs/core": "^7.6.5",
@@ -63,9 +60,6 @@
     "class-validator": "^0.12.2",
     "compression": "^1.7.4",
     "helmet": "^4.4.1",
-    "jwks-rsa": "^1.12.3",
-    "jwt-decode": "^3.1.2",
-    "mysql2": "^2.2.5",
     "passport": "^0.4.1",
     "passport-jwt": "^4.0.0",
     "passport-local": "^1.0.0",

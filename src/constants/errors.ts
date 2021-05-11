@@ -2,6 +2,10 @@
 export const INTERNAL_SERVER_ERROR_MSG: string = 'Something went wrong, please try again later';
 //#endregion
 
+// #region bad unauthorized
+export const UNAUTHORIZED_TO_PERFORM_OPERATION: string = 'You\'re unauthorized to perform operation';
+// #endregion bad request
+
 // #region bad request
 export const INVALID_INPUT: string = 'Invalid input';
 export const INVALID_CREDENTIALS: string = 'Invalid credentials';

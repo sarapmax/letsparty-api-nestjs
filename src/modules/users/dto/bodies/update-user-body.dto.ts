@@ -25,11 +25,5 @@ export class UpdateUserBodyDto {
   @Expose()
   @IsString()
   @IsOptional()
-  public readonly firstName: string;
-
-  @ApiProperty()
-  @Expose()
-  @IsString()
-  @IsOptional()
-  public readonly lastName: string;
+  public readonly fullName: string;
 }

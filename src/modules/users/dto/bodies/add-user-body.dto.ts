@@ -20,10 +20,5 @@ export class AddUserBodyDto {
   @ApiProperty()
   @Expose()
   @IsString()
-  public readonly firstName: string;
-
-  @ApiProperty()
-  @Expose()
-  @IsString()
-  public readonly lastName: string;
+  public readonly fullName: string;
 }

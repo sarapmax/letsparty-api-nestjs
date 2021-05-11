@@ -8,5 +8,4 @@ export const RECORD_DELETED: string = 'This record has been deleted successfully
 export const MULTIPLE_RECORDS_CREATED: string = 'Records have been created successfully.';
 export const MULTIPLE_RECORDS_DELETED: string = 'Records have been deleted successfully.';
 export const MULTIPLE_RECORDS_UPDATED: string = 'Records have been updated successfully.';
-export const COGNITO_USER_CREATED: string = 'User has been created on AWS Cognito.';
 // #endregion success response

@@ -8,8 +8,6 @@ import { dbConfigOptions } from './database/database.config';
 import { ConfigModule } from '@nestjs/config';
 import { IsExistingConstraint } from './validations/is-existing.validation';
 import { IsUniqueConstraint } from './validations/is-unique.validation';
-import { HttpLogsModule } from './modules/http-logs/http-logs.module';
-
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -22,7 +20,6 @@ import { HttpLogsModule } from './modules/http-logs/http-logs.module';
     HealthModule,
     UsersModule,
     AuthModule,
-    HttpLogsModule,
     IsExistingConstraint,
     IsUniqueConstraint,
   ],

@@ -9,9 +9,6 @@ import { setupValidatePipe } from '@scgwedotech/nestjs-error-handling';
 import helmet = require('helmet');
 import compression = require('compression');
 import { ContextInterceptor } from './context.interceptor';
-import { HttpExceptionFilter } from './configs/http-exception.filter';
-import { HttpLogsService } from './modules/http-logs/http-logs.service';
-import { HttpLog } from './modules/http-logs/http-log.model';
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule);
@@ -20,7 +17,6 @@ async function bootstrap(): Promise<void> {
   setupValidateContainer(useContainer, app, AppModule);
   app.useGlobalInterceptors(new ContextInterceptor());
   setupSwagger(app, process.env.APP_NAME);
-  app.useGlobalFilters(new HttpExceptionFilter(new HttpLogsService(HttpLog)));
 
   await app.listen(process.env.APP_PORT || 3000);
 }

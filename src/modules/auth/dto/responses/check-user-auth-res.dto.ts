@@ -9,8 +9,7 @@ export class CheckUserAuthResDto {
 
     this.id = userDataValues.id;
     this.email = userDataValues.email;
-    this.firstName = userDataValues.firstName;
-    this.lastName = userDataValues.lastName;
+    this.fullName = userDataValues.fullName;
   }
 
   @ApiProperty()
@@ -23,9 +22,5 @@ export class CheckUserAuthResDto {
 
   @ApiProperty()
   @Expose()
-  public readonly firstName: string;
-
-  @ApiProperty()
-  @Expose()
-  public readonly lastName: string;
+  public readonly fullName: string;
 }

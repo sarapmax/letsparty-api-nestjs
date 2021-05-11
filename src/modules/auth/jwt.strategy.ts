@@ -4,33 +4,26 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { User } from '../users/user.model';
 import { UsersService } from '../users/users.service';
 import { UNAUTHORIZED_TO_PERFORM_OPERATION } from 'src/constants';
-import { passportJwtSecret } from 'jwks-rsa';
+import { ILoginPayload } from './interfaces/login-user-data.interface';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
-  constructor(private readonly usersService: UsersService) {
+  constructor(private readonly userService: UsersService) {
     super({
-      secretOrKeyProvider: passportJwtSecret({
-        cache: true,
-        rateLimit: true,
-        jwksRequestsPerMinute: 5,
-        jwksUri: `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}/.well-known/jwks.json`,
-      }),
-
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
-      audience: process.env.AWS_COGNITO_CLIENT_ID,
-      issuer: `https://cognito-idp.${process.env.AWS_REGION}.amazonaws.com/${process.env.AWS_COGNITO_USER_POOL_ID}`,
-      algorithms: ['RS256'],
+      ignoreExpiration: false,
+      secretOrKey: process.env.JWTKEY,
     });
   }
 
-  // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
-  public async validate(payload: any): Promise<User> {
-    const user: User = await this.usersService.findByEmail(payload.email);
+  public async validate(payload: ILoginPayload): Promise<ILoginPayload> {
+    // check if user in the token actually exist
+    const user: User = await this.userService.verifyById(payload.id);
+
     if (!user) {
       throw new UnauthorizedException(UNAUTHORIZED_TO_PERFORM_OPERATION);
     }
 
-    return user;
+    return payload;
   }
 }

@@ -1,27 +1,19 @@
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { User } from './user.model';
+import * as bcrypt from 'bcrypt';
 import { AddUserBodyDto } from './dto/bodies/add-user-body.dto';
 import { UpdateUserBodyDto } from './dto/bodies/update-user-body.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { ICOGNITO_SERVICE_PROVIDER, RECORD_NOT_FOUND, RoleTypes } from 'src/constants';
-import { FindOptions } from 'sequelize/types';
-import { GetUserQueryDto } from './dto/queries/get-user-query.dto';
-import { IUsersService } from './interfaces/services/users-service.interface';
-import { ICognitoService } from '../cognito/intefaces/cognito-service.interface';
+import { RECORD_NOT_FOUND } from 'src/constants';
 @Injectable()
-export class UsersService implements IUsersService {
+export class UsersService {
   constructor(
     @InjectModel(User) private usersRepository: typeof User,
-    @Inject(ICOGNITO_SERVICE_PROVIDER) private readonly cognitoService: ICognitoService,
   ) { }
 
-  public async findAll(query: GetUserQueryDto): Promise<User[]> {
+  public async findAll(): Promise<User[]> {
     try {
-      const findOptions: FindOptions = {};
-      if (query.email) {
-        findOptions.where = { email: query.email };
-      }
-      const users: User[] = await this.usersRepository.findAll<User>(findOptions);
+      const users: User[] = await this.usersRepository.findAll<User>();
 
       return users;
     } catch (error) {
@@ -65,28 +57,14 @@ export class UsersService implements IUsersService {
 
   public async create(addUserBodyDto: AddUserBodyDto): Promise<User> {
     try {
-      const newUser: User = await this.usersRepository.create<User>({ ...addUserBodyDto });
+      // hash the password
+      const hashedPassword: string = await this.hashPassword(addUserBodyDto.password);
+      const newUser: User = await this.usersRepository.create<User>({
+        ...addUserBodyDto,
+        password: hashedPassword,
+      });
 
       return newUser;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-
-  public async createUserAndCognitoUser(addUserBodyDto: AddUserBodyDto): Promise<User> {
-    try {
-      await this.createCognitoUser(addUserBodyDto.email, addUserBodyDto.password);
-      const newUser: User = await this.create(addUserBodyDto);
-
-      return newUser;
-    } catch (error) {
-      throw new InternalServerErrorException(error);
-    }
-  }
-
-  public async createCognitoUser(email: string, password: string): Promise<void> {
-    try {
-      await this.cognitoService.signUpWithVerify(email, password, email, RoleTypes.USER);
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
@@ -94,7 +72,12 @@ export class UsersService implements IUsersService {
 
   public async update(id: number, updateUserBodyDto: UpdateUserBodyDto): Promise<User> {
     try {
-      const [, [updatedUser]] = await this.usersRepository.update(updateUserBodyDto, { where: { id }, returning: true });
+      // hash the password
+      const hashedPassword: string = await this.hashPassword(updateUserBodyDto.password);
+      const [, [updatedUser]] = await this.usersRepository.update(
+        { ...updateUserBodyDto, password: hashedPassword },
+        { where: { id }, returning: true }
+      );
 
       return updatedUser;
     } catch (error) {
@@ -108,5 +91,10 @@ export class UsersService implements IUsersService {
     } catch (error) {
       throw new InternalServerErrorException(error);
     }
+  }
+
+  private async hashPassword(password: string): Promise<string> {
+    const hash: string = await bcrypt.hash(password, 10);
+    return hash;
   }
 }

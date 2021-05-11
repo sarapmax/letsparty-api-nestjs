@@ -20,9 +20,5 @@ export class GetUserResDto {
 
   @ApiProperty()
   @Expose()
-  public readonly firstName: string;
-
-  @ApiProperty()
-  @Expose()
-  public readonly lastName: string;
+  public readonly fullName: string;
 }
