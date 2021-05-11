@@ -72,12 +72,7 @@ export class UsersService {
 
   public async update(id: number, updateUserBodyDto: UpdateUserBodyDto): Promise<User> {
     try {
-      // hash the password
-      const hashedPassword: string = await this.hashPassword(updateUserBodyDto.password);
-      const [, [updatedUser]] = await this.usersRepository.update(
-        { ...updateUserBodyDto, password: hashedPassword },
-        { where: { id }, returning: true }
-      );
+      const [, [updatedUser]] = await this.usersRepository.update(updateUserBodyDto, { where: { id }, returning: true });
 
       return updatedUser;
     } catch (error) {

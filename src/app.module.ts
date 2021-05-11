@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { CacheModule } from '@scgwedotech/nestjs-cache';
 import { HealthModule } from './modules/health/health.module';
 import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -11,7 +10,6 @@ import { IsUniqueConstraint } from './validations/is-unique.validation';
 @Module({
   imports: [
     ConfigModule.forRoot(),
-    CacheModule,
     SequelizeModule.forRoot({
       ...dbConfigOptions(),
       autoLoadModels: true,

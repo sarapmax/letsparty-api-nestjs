@@ -2,13 +2,12 @@ import 'dotenv/config';
 import { NestFactory } from '@nestjs/core';
 import { INestApplication } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder, OpenAPIObject } from '@nestjs/swagger';
-import { setupValidateContainer } from '@scgwedotech/nestjs-error-handling';
 import { AppModule } from './app.module';
 import { useContainer } from 'class-validator';
-import { setupValidatePipe } from '@scgwedotech/nestjs-error-handling';
 import helmet = require('helmet');
 import compression = require('compression');
 import { ContextInterceptor } from './context.interceptor';
+import { setupValidateContainer, setupValidatePipe } from './utils/error-handling/error-handling.util';
 
 async function bootstrap(): Promise<void> {
   const app: INestApplication = await NestFactory.create(AppModule);

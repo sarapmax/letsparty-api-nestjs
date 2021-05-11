@@ -51,9 +51,6 @@
     "@nestjs/sequelize": "^0.2.0",
     "@nestjs/swagger": "^4.7.11",
     "@nestjs/terminus": "^7.0.1",
-    "@scgwedotech/nestjs-cache": "^1.0.6",
-    "@scgwedotech/nestjs-config": "^1.0.5",
-    "@scgwedotech/nestjs-error-handling": "^1.0.5",
     "@types/lodash": "^4.14.168",
     "bcrypt": "^5.0.0",
     "class-transformer": "^0.3.2",
@@ -70,6 +67,7 @@
     "rxjs": "^6.6.3",
     "sequelize": "^6.4.0",
     "sequelize-typescript": "^2.0.0",
+    "snake-case": "^3.0.4",
     "swagger-ui-express": "^4.1.6"
   },
   "devDependencies": {
