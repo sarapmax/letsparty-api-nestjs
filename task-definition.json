@@ -1,0 +1,95 @@
+{
+    "family": "ras-api-dev",
+    "executionRoleArn": "arn:aws:iam::215023703764:role/ecsTaskExecutionRole",
+    "taskRoleArn": "arn:aws:iam::215023703764:role/ecsTaskExecutionRole",
+    "networkMode": "awsvpc",
+    "containerDefinitions": [
+        {
+            "name": "ras-api-dev",
+            "image": "215023703764.dkr.ecr.ap-southeast-1.amazonaws.com/ras-api-dev:latest",
+            "portMappings": [
+                {
+                    "containerPort": 3000,
+                    "hostPort": 3000,
+                    "protocol": "tcp"
+                }
+            ],
+            "logConfiguration": {
+                "logDriver": "awslogs",
+                "options": {
+                    "awslogs-group": "<app_name>-<node_env>",
+                    "awslogs-region": "<aws_region>",
+                    "awslogs-stream-prefix": "<app_name>-<node_env>"
+                }
+            },
+            "essential": true,
+            "environment": [
+                {
+                    "name": "NODE_ENV",
+                    "value": "<node_env>"
+                },
+                {
+                    "name": "APP_NAME",
+                    "value": "<app_name>"
+                },
+                {
+                    "name": "APP_PORT",
+                    "value": "<app_port>"
+                },
+                {
+                    "name": "DB_HOST",
+                    "value": "<db_host>"
+                },
+                {
+                    "name": "DB_PORT",
+                    "value": "<db_port>"
+                },
+                {
+                    "name": "DB_USER",
+                    "value": "<db_username>"
+                },
+                {
+                    "name": "DB_PASS",
+                    "value": "<db_password>"
+                },
+                {
+                    "name": "DB_NAME",
+                    "value": "<db_name>"
+                },
+                {
+                    "name": "AWS_REGION",
+                    "value": "<aws_region>"
+                },
+                {
+                    "name": "AWS_COGNITO_IDENTITY_POOL_ID",
+                    "value": "<aws_cognito_identity_pool_id>"
+                },
+                {
+                    "name": "AWS_COGNITO_USER_POOL_ID",
+                    "value": "<aws_cognito_user_pool_id>"
+                },
+                {
+                    "name": "AWS_COGNITO_CLIENT_ID",
+                    "value": "<aws_cognito_client_id>"
+                },
+                {
+                    "name": "AWS_COGNITO_CLIENT_SECRET",
+                    "value": "<aws_cognito_client_secret>"
+                },
+                {
+                    "name": "JWTKEY",
+                    "value": "<jwtkey>"
+                },
+                {
+                    "name": "CORS",
+                    "value": "<cors>"
+                }
+            ]
+        }
+    ],
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "cpu": "256",
+    "memory": "512"
+}

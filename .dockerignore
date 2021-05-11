@@ -1,0 +1,11 @@
+migrations
+.dockerignore
+.eslintignore
+editorconfig
+.nvmrc
+.prettierrc
+Dockerfile
+nest-cli.json
+env/.local.env
+env/.test.env
+node_modules
