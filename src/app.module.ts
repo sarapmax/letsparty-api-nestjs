@@ -9,6 +9,7 @@ import { IsUniqueConstraint } from './validations/is-unique.validation';
 import { PartiesModule } from './modules/parties/parties.module';
 import { HealthModule } from './modules/health/health.module';
 import { S3UploadModule } from './modules/core/s3-upload/s3-upload.module';
+import { UserPartiesModule } from './modules/user-parties/user-parties.module';
 @Module({
   imports: [
     ConfigModule.forRoot(),
@@ -24,6 +25,7 @@ import { S3UploadModule } from './modules/core/s3-upload/s3-upload.module';
     IsUniqueConstraint,
     PartiesModule,
     S3UploadModule,
+    UserPartiesModule,
   ],
 })
 export class AppModule {}

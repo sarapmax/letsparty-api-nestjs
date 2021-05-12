@@ -1,11 +1,12 @@
-import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException } from '@nestjs/common';
 import { Party } from './party.model';
 import { AddPartyBodyDto } from './dto/bodies/add-party-body.dto';
 import { UpdatePartyBodyDto } from './dto/bodies/update-party-body.dto';
 import { InjectModel } from '@nestjs/sequelize';
-import { RECORD_NOT_FOUND } from 'src/constants';
 import { S3UploadService } from '../core/s3-upload/s3-upload.service';
 import { S3 } from 'aws-sdk';
+import { User } from '../users/user.model';
+
 @Injectable()
 export class PartiesService {
   constructor(
@@ -15,7 +16,9 @@ export class PartiesService {
 
   public async findAll(): Promise<Party[]> {
     try {
-      const parties: Party[] = await this.partiesRepository.findAll<Party>();
+      const parties: Party[] = await this.partiesRepository.findAll<Party>({
+        include: [User],
+      });
 
       return parties;
     } catch (error) {
@@ -25,11 +28,10 @@ export class PartiesService {
 
   public async findOne(id: number): Promise<Party> {
     try {
-      const party: Party = await this.partiesRepository.findOne<Party>({ where: { id } });
-
-      if (!party) {
-        throw new NotFoundException(RECORD_NOT_FOUND);
-      }
+      const party: Party = await this.partiesRepository.findOne<Party>({
+        include: [User],
+        where: { id },
+      });
 
       return party;
     } catch (error) {
