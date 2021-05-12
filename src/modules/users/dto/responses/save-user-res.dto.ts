@@ -6,9 +6,7 @@ import { User } from '../../user.model';
 @Exclude()
 export class SaveUserResDto {
   constructor(user: User, message: string = RECORD_CREATED) {
-    const userData: User = user.get({ plain: true });
-
-    this.id = userData.id;
+    this.id = user.id;
     this.message = message;
   }
 

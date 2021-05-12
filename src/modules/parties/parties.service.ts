@@ -5,7 +5,7 @@ import { UpdatePartyBodyDto } from './dto/bodies/update-party-body.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { S3UploadService } from '../core/s3-upload/s3-upload.service';
 import { S3 } from 'aws-sdk';
-import { User } from '../users/user.model';
+import { RequestContext } from 'src/request-context';
 
 @Injectable()
 export class PartiesService {
@@ -16,9 +16,7 @@ export class PartiesService {
 
   public async findAll(): Promise<Party[]> {
     try {
-      const parties: Party[] = await this.partiesRepository.findAll<Party>({
-        include: [User],
-      });
+      const parties: Party[] = await this.partiesRepository.findAll<Party>();
 
       return parties;
     } catch (error) {
@@ -29,7 +27,6 @@ export class PartiesService {
   public async findOne(id: number): Promise<Party> {
     try {
       const party: Party = await this.partiesRepository.findOne<Party>({
-        include: [User],
         where: { id },
       });
 
@@ -47,6 +44,7 @@ export class PartiesService {
         imageUrl: Location,
         imageKey: Key,
         ...addPartyBodyDto,
+        createdById: RequestContext.getCurrentUser().id,
       });
 
       return newParty;
@@ -71,6 +69,7 @@ export class PartiesService {
         ...updatePartyBodyDto,
         imageUrl: existingParty.imageUrl,
         imageKey: existingParty.imageKey,
+        updatedById: RequestContext.getCurrentUser().id,
       }, { where: { id }, returning: true });
 
       return updatedParty;

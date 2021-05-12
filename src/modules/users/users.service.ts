@@ -1,14 +1,17 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { User } from './user.model';
 import * as bcrypt from 'bcrypt';
 import { AddUserBodyDto } from './dto/bodies/add-user-body.dto';
 import { UpdateUserBodyDto } from './dto/bodies/update-user-body.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { RECORD_NOT_FOUND } from 'src/constants';
+import { S3UploadService } from '../core/s3-upload/s3-upload.service';
+import { S3 } from 'aws-sdk';
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User) private usersRepository: typeof User,
+    @Inject(S3UploadService) private s3UploadService: S3UploadService,
   ) { }
 
   public async findAll(): Promise<User[]> {
@@ -55,12 +58,16 @@ export class UsersService {
     }
   }
 
-  public async create(addUserBodyDto: AddUserBodyDto): Promise<User> {
+  public async create(avatar: Express.Multer.File, addUserBodyDto: AddUserBodyDto): Promise<User> {
     try {
       // hash the password
       const hashedPassword: string = await this.hashPassword(addUserBodyDto.password);
+      const { Location, Key }: S3.ManagedUpload.SendData = await this.s3UploadService.upload(avatar, avatar.originalname);
+
       const newUser: User = await this.usersRepository.create<User>({
         ...addUserBodyDto,
+        avatarUrl: Location,
+        avatarKey: Key,
         password: hashedPassword,
       });
 
