@@ -9,6 +9,8 @@ export class GetPartyResDto {
   constructor(party: Party) {
     Object.assign(this, party.get({ plain: true }));
     this.partyMembers = party.users.map((user: User) => new GetUserResDto(user));
+    this.createdBy = new GetUserResDto(party.createdBy);
+    this.updatedBy = new GetUserResDto(party.updatedBy);
   }
 
   @ApiProperty()
@@ -27,7 +29,15 @@ export class GetPartyResDto {
   @Expose()
   public readonly maxMembers: number;
 
-  @ApiProperty()
+  @ApiProperty({ type: [GetUserResDto] })
   @Expose()
   public readonly partyMembers: GetUserResDto[];
+
+  @ApiProperty({ type: GetUserResDto })
+  @Expose()
+  public readonly createdBy: GetUserResDto;
+
+  @ApiProperty({ type: GetUserResDto })
+  @Expose()
+  public readonly updatedBy: GetUserResDto;
 }

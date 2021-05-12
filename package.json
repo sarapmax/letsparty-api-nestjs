@@ -52,6 +52,7 @@
     "@nestjs/swagger": "^4.7.11",
     "@nestjs/terminus": "^7.0.1",
     "@types/lodash": "^4.14.168",
+    "asyncctx": "^2.0.16",
     "aws-sdk": "^2.905.0",
     "bcrypt": "^5.0.0",
     "class-transformer": "^0.3.2",
