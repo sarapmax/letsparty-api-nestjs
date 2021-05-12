@@ -12,12 +12,6 @@ module.exports = {
     define: {
       underscored: true,
     },
-    dialectOptions: {
-      ssl: {
-        require: true,
-        rejectUnauthorized: false,
-      }
-    },
   },
   production: {
     username: process.env.DB_USER,
