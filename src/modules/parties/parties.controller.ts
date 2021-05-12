@@ -1,0 +1,67 @@
+import { Body, Controller, Delete, Get, HttpStatus, Param, Put, Post, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { AddPartyBodyDto } from './dto/bodies/add-party-body.dto';
+import { UpdatePartyBodyDto } from './dto/bodies/update-party-body.dto';
+import { GetPartyParamDto } from './dto/params/get-party-param.dto';
+import { DeletePartyResDto } from './dto/responses/delete-party-res.dto';
+import { GetPartyResDto } from './dto/responses/get-party-res.dto';
+import { PartiesService } from './parties.service';
+import { SavePartyResDto } from './dto/responses/save-party-res.dto';
+import { RECORD_UPDATED } from 'src/constants';
+import { Party } from './party.model';
+import { FileInterceptor } from '@nestjs/platform-express';
+
+@ApiTags('Parties')
+@Controller('/v1/parties')
+@UseGuards(AuthGuard('jwt'))
+export class PartiesController {
+  constructor(private readonly partiesService: PartiesService) {}
+
+  @ApiOperation({ summary: 'Get all parties' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Get all parties from database', type: [GetPartyResDto] })
+  @Get('/')
+  public async findAll(): Promise<GetPartyResDto[]> {
+    const parties: Party[] = await this.partiesService.findAll();
+    return parties.map((party: Party): GetPartyResDto => new GetPartyResDto(party));
+  }
+
+  @ApiOperation({ summary: 'Get specific party' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Search party by id and return it\'s values', type: GetPartyResDto })
+  @Get('/:id')
+  public async findOne(@Param() param: GetPartyParamDto): Promise<GetPartyResDto> {
+    const party: Party = await this.partiesService.findOne(param.id);
+
+    return new GetPartyResDto(party);
+  }
+
+  @ApiOperation({ summary: 'Create party' })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Add new party to database', type: SavePartyResDto })
+  @Post('/')
+  @UseInterceptors(FileInterceptor('image'))
+  public async create(@UploadedFile() image: Express.Multer.File, @Body() body: AddPartyBodyDto): Promise<SavePartyResDto> {
+    const newParty: Party = await this.partiesService.create(image, body);
+    return new SavePartyResDto(newParty);
+  }
+
+  @ApiOperation({ summary: 'Update party' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Search party by id and update it\'s values', type: SavePartyResDto })
+  @Put('/:id')
+  @UseInterceptors(FileInterceptor('image'))
+  public async update(
+    @Param() param: GetPartyParamDto,
+      @UploadedFile() image: Express.Multer.File,
+      @Body() body: UpdatePartyBodyDto
+  ): Promise<SavePartyResDto> {
+    const updatedParty: Party = await this.partiesService.update(param.id, image, body);
+    return new SavePartyResDto(updatedParty, RECORD_UPDATED);
+  }
+
+  @ApiOperation({ summary: 'Delete specific party' })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Search party by id and delete it', type: DeletePartyResDto })
+  @Delete('/:id')
+  public async destroy(@Param() param: GetPartyParamDto): Promise<DeletePartyResDto> {
+    await this.partiesService.destroy(param.id);
+    return new DeletePartyResDto();
+  }
+}
