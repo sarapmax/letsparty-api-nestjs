@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Expose } from 'class-transformer';
-import { IsString, IsNumber } from 'class-validator';
+import { IsString } from 'class-validator';
 
 export class AddPartyBodyDto {
   @ApiProperty()
@@ -10,6 +10,5 @@ export class AddPartyBodyDto {
 
   @ApiProperty()
   @Expose()
-  @IsNumber()
   public readonly maxMembers: number;
 }

@@ -6,6 +6,9 @@ export class Party extends Model {
   public imageUrl: string;
 
   @Column
+  public imageKey: string;
+
+  @Column
   public name: string;
 
   @Column

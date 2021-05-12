@@ -1,13 +1,16 @@
-import { Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { Party } from './party.model';
 import { AddPartyBodyDto } from './dto/bodies/add-party-body.dto';
 import { UpdatePartyBodyDto } from './dto/bodies/update-party-body.dto';
 import { InjectModel } from '@nestjs/sequelize';
 import { RECORD_NOT_FOUND } from 'src/constants';
+import { S3UploadService } from '../core/s3-upload/s3-upload.service';
+import { S3 } from 'aws-sdk';
 @Injectable()
 export class PartiesService {
   constructor(
     @InjectModel(Party) private partiesRepository: typeof Party,
+    @Inject(S3UploadService) private s3UploadService: S3UploadService,
   ) { }
 
   public async findAll(): Promise<Party[]> {
@@ -34,10 +37,13 @@ export class PartiesService {
     }
   }
 
-  public async create(addPartyBodyDto: AddPartyBodyDto): Promise<Party> {
+  public async create(image: Express.Multer.File, addPartyBodyDto: AddPartyBodyDto): Promise<Party> {
     try {
+      const { Location, Key }: S3.ManagedUpload.SendData = await this.s3UploadService.upload(image, image.originalname);
+
       const newParty: Party = await this.partiesRepository.create<Party>({
-        imageUrl: 'foobar.jpg',
+        imageUrl: Location,
+        imageKey: Key,
         ...addPartyBodyDto,
       });
 
@@ -47,9 +53,23 @@ export class PartiesService {
     }
   }
 
-  public async update(id: number, updatePartyBodyDto: UpdatePartyBodyDto): Promise<Party> {
+  public async update(id: number, newImage: Express.Multer.File, updatePartyBodyDto: UpdatePartyBodyDto): Promise<Party> {
     try {
-      const [, [updatedParty]] = await this.partiesRepository.update(updatePartyBodyDto, { where: { id }, returning: true });
+      const existingParty: Party = await this.findOne(id);
+
+      if (newImage) {
+        await this.s3UploadService.delete(existingParty.imageKey);
+
+        const { Location, Key }: S3.ManagedUpload.SendData = await this.s3UploadService.upload(newImage, newImage.originalname);
+        existingParty.imageUrl = Location;
+        existingParty.imageKey = Key;
+      }
+
+      const [, [updatedParty]] = await this.partiesRepository.update({
+        ...updatePartyBodyDto,
+        imageUrl: existingParty.imageUrl,
+        imageKey: existingParty.imageKey,
+      }, { where: { id }, returning: true });
 
       return updatedParty;
     } catch (error) {
@@ -59,6 +79,8 @@ export class PartiesService {
 
   public async destroy(id: number): Promise<void> {
     try {
+      const existingParty: Party = await this.findOne(id);
+      await this.s3UploadService.delete(existingParty.imageKey);
       await this.partiesRepository.destroy({ where: { id } });
     } catch (error) {
       throw new InternalServerErrorException(error);

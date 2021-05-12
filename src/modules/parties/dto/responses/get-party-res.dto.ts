@@ -10,6 +10,10 @@ export class GetPartyResDto {
 
   @ApiProperty()
   @Expose()
+  public readonly id: number;
+
+  @ApiProperty()
+  @Expose()
   public readonly imageUrl: string;
 
   @ApiProperty()

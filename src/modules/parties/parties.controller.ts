@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Put, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Put, Post, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AddPartyBodyDto } from './dto/bodies/add-party-body.dto';
@@ -10,6 +10,7 @@ import { PartiesService } from './parties.service';
 import { SavePartyResDto } from './dto/responses/save-party-res.dto';
 import { RECORD_UPDATED } from 'src/constants';
 import { Party } from './party.model';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Parties')
 @Controller('/v1/parties')
@@ -37,16 +38,22 @@ export class PartiesController {
   @ApiOperation({ summary: 'Create party' })
   @ApiResponse({ status: HttpStatus.CREATED, description: 'Add new party to database', type: SavePartyResDto })
   @Post('/')
-  public async create(@Body() body: AddPartyBodyDto): Promise<SavePartyResDto> {
-    const newParty: Party = await this.partiesService.create(body);
+  @UseInterceptors(FileInterceptor('image'))
+  public async create(@UploadedFile() image: Express.Multer.File, @Body() body: AddPartyBodyDto): Promise<SavePartyResDto> {
+    const newParty: Party = await this.partiesService.create(image, body);
     return new SavePartyResDto(newParty);
   }
 
   @ApiOperation({ summary: 'Update party' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Search party by id and update it\'s values', type: SavePartyResDto })
   @Put('/:id')
-  public async update(@Param() param: GetPartyParamDto, @Body() body: UpdatePartyBodyDto): Promise<SavePartyResDto> {
-    const updatedParty: Party = await this.partiesService.update(param.id, body);
+  @UseInterceptors(FileInterceptor('image'))
+  public async update(
+    @Param() param: GetPartyParamDto,
+      @UploadedFile() image: Express.Multer.File,
+      @Body() body: UpdatePartyBodyDto
+  ): Promise<SavePartyResDto> {
+    const updatedParty: Party = await this.partiesService.update(param.id, image, body);
     return new SavePartyResDto(updatedParty, RECORD_UPDATED);
   }
 
