@@ -9,4 +9,10 @@ export class User extends Model {
 
   @Column
   public fullName: string;
+
+  @Column
+  public avatarUrl: string;
+
+  @Column
+  public avatarKey: string;
 }

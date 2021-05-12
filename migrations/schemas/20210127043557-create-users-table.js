@@ -18,6 +18,14 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
+      avatar_url: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
+      avatar_key: {
+        type: Sequelize.STRING,
+        allowNull: true,
+      },
       full_name: {
         type: Sequelize.STRING,
         allowNull: false,

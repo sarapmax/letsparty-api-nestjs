@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, HttpStatus, Param, Put, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, HttpStatus, Param, Put, Post, UseGuards, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AddUserBodyDto } from './dto/bodies/add-user-body.dto';
@@ -10,6 +10,7 @@ import { User } from './user.model';
 import { UsersService } from './users.service';
 import { SaveUserResDto } from './dto/responses/save-user-res.dto';
 import { RECORD_UPDATED } from 'src/constants';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Users')
 @Controller('/v1/users')
@@ -35,15 +36,16 @@ export class UsersController {
   }
 
   @ApiOperation({ summary: 'Create user' })
-  @ApiResponse({ status: HttpStatus.CREATED, description: 'Add new user to database', type: GetUserResDto })
+  @ApiResponse({ status: HttpStatus.CREATED, description: 'Add new user to database', type: SaveUserResDto })
   @Post('/')
-  public async create(@Body() body: AddUserBodyDto): Promise<SaveUserResDto> {
-    const user: User = await this.usersService.create(body);
+  @UseInterceptors(FileInterceptor('avatar'))
+  public async create(@UploadedFile() avatar: Express.Multer.File, @Body() body: AddUserBodyDto): Promise<SaveUserResDto> {
+    const user: User = await this.usersService.create(avatar, body);
     return new SaveUserResDto(user);
   }
 
   @ApiOperation({ summary: 'Update user detail' })
-  @ApiResponse({ status: HttpStatus.OK, description: 'Search user by id and update it\'s details', type: GetUserResDto })
+  @ApiResponse({ status: HttpStatus.OK, description: 'Search user by id and update it\'s details', type: SaveUserResDto })
   @Put('/:id')
   public async update(@Body() body: UpdateUserBodyDto, @Param() param: GetUserParamDto): Promise<SaveUserResDto> {
     const user: User = await this.usersService.update(param.id, body);
