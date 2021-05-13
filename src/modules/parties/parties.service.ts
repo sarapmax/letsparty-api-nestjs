@@ -16,7 +16,7 @@ export class PartiesService {
 
   public async findAll(): Promise<Party[]> {
     try {
-      const parties: Party[] = await this.partiesRepository.findAll<Party>();
+      const parties: Party[] = await this.partiesRepository.findAll<Party>({ order: [['createdAt', 'DESC']] });
 
       return parties;
     } catch (error) {

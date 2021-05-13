@@ -9,8 +9,8 @@ export class GetPartyResDto {
   constructor(party: Party) {
     Object.assign(this, party.get({ plain: true }));
     this.partyMembers = party.users.map((user: User) => new GetUserResDto(user));
-    this.createdBy = new GetUserResDto(party.createdBy);
-    this.updatedBy = new GetUserResDto(party.updatedBy);
+    this.createdBy = party.createdBy ? new GetUserResDto(party.createdBy) : null;
+    this.updatedBy = party.updatedBy ? new GetUserResDto(party.updatedBy) : null;
   }
 
   @ApiProperty()

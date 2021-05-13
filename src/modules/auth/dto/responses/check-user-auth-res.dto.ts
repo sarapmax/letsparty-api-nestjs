@@ -5,11 +5,7 @@ import { User } from 'src/modules/users/user.model';
 @Exclude()
 export class CheckUserAuthResDto {
   constructor(user: User) {
-    const userDataValues: User = user.get({ plain: true });
-
-    this.id = userDataValues.id;
-    this.email = userDataValues.email;
-    this.fullName = userDataValues.fullName;
+    Object.assign(this, user.get({ plain: true }));
   }
 
   @ApiProperty()
@@ -23,4 +19,8 @@ export class CheckUserAuthResDto {
   @ApiProperty()
   @Expose()
   public readonly fullName: string;
+
+  @ApiProperty()
+  @Expose()
+  public readonly avatarUrl: string;
 }
