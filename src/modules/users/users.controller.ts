@@ -14,12 +14,12 @@ import { FileInterceptor } from '@nestjs/platform-express';
 
 @ApiTags('Users')
 @Controller('/v1/users')
-@UseGuards(AuthGuard('jwt'))
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @ApiOperation({ summary: 'Get all users' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Get all users from database', type: [GetUserResDto] })
+  @UseGuards(AuthGuard('jwt'))
   @Get('/')
   public async findAll(): Promise<GetUserResDto[]> {
     const users: User[] = await this.usersService.findAll();
@@ -28,6 +28,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Get specific user' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Search user by id and return it\'s values', type: GetUserResDto })
+  @UseGuards(AuthGuard('jwt'))
   @Get('/:id')
   public async findOne(@Param() param: GetUserParamDto): Promise<GetUserResDto> {
     const user: User = await this.usersService.findOne(param.id);
@@ -46,6 +47,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Update user detail' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Search user by id and update it\'s details', type: SaveUserResDto })
+  @UseGuards(AuthGuard('jwt'))
   @Put('/:id')
   public async update(@Body() body: UpdateUserBodyDto, @Param() param: GetUserParamDto): Promise<SaveUserResDto> {
     const user: User = await this.usersService.update(param.id, body);
@@ -54,6 +56,7 @@ export class UsersController {
 
   @ApiOperation({ summary: 'Delete specific user' })
   @ApiResponse({ status: HttpStatus.OK, description: 'Search user by id and delete it', type: DeleteUserResDto })
+  @UseGuards(AuthGuard('jwt'))
   @Delete('/:id')
   public async destroy(@Param() param: GetUserParamDto): Promise<DeleteUserResDto> {
     await this.usersService.destroy(param.id);
